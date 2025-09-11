@@ -1,58 +1,53 @@
 import random
 
 
-class Guese:
-
+class GuessGame:
     def say_hi(self):
-        print("Welcome this is game. You need to guese the number.")
+        print("Welcome! This is a game where you need to guess the number.")
+        print("Number is between 0 and 100. You have 10 tries. Type 'q' to quit.\n")
 
     def set_computer_number(self):
-        self.computer_number = random.randint(0, 100)
-        print("Number should be between 0 to 100 or q to leave. You have 10 tries.\n")
-        return self.computer_number
+        return random.randint(0, 100)
 
-    def guese(self, computer_number):
+    def guess_number(self, computer_number):
         TRIES = 10
-        while True:
-            user_answer_str = input("Your number? ")
+        while TRIES > 0:
+            user_answer_str = input("Your number? ").strip()
+
             if not user_answer_str:
                 print("Empty, please try again!")
                 continue
 
             if user_answer_str.lower() == "q":
-                return None
+                print("Exit the game!")
+                return
 
-            if user_answer_str.isdigit():
-                user_answer = int(user_answer_str)
-            else:
-                print("Only number! Try again.")
+            if not user_answer_str.isdigit():
+                print("Only numbers are allowed! Try again.")
                 continue
 
-            if TRIES == 0:
-                print("End of game! You are lose!")
-                return None
+            user_answer = int(user_answer_str)
 
             if user_answer > computer_number:
                 TRIES -= 1
-                print(f"No, it less! You have {TRIES} yet.")
-                continue
+                print(f"Too high! You have {TRIES} tries left.")
             elif user_answer < computer_number:
                 TRIES -= 1
-                print(f"No, it bigger! You have {TRIES} yet.")
-                continue
+                print(f"Too low! You have {TRIES} tries left.")
             else:
-                print("Congratulations, you win!")
-                break
+                print("🎉 Congratulations, you guessed it!")
+                return
+
+        print("❌ You ran out of tries! Game over.")
 
 
 def main():
-    app = Guese()
+    app = GuessGame()
     app.say_hi()
-    computer_number = app.set_computer_number()
-    answer = app.guese(computer_number)
-    if answer is None:
-        print("Exit the app!")
+    number = app.set_computer_number()
+    app.guess_number(number)
 
 
 if __name__ == "__main__":
     main()
+
