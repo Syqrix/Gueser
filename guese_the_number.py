@@ -2,6 +2,9 @@ import random
 
 
 class GuessGame:
+    def __init__(self):
+        self.history = []
+
     def say_hi(self):
         print("Welcome! This is a game where you need to guess the number.")
         print("Number is between 0 and 100. You have 10 tries. Type 'q' to quit.\n")
@@ -30,13 +33,24 @@ class GuessGame:
 
             if user_answer > computer_number:
                 TRIES -= 1
+                self.history.append(user_answer)
                 print(f"Too high! You have {TRIES} tries left.")
             elif user_answer < computer_number:
                 TRIES -= 1
+                self.history.append(user_answer)
                 print(f"Too low! You have {TRIES} tries left.")
             else:
                 print("🎉 Congratulations, you guessed it!")
-                return
+                user_input = input(
+                    "Do you want to see a history? y(yes)/n(no)")
+                if not user_input:
+                    print("Wrong answer!")
+                if user_input.isdigit():
+                    print("Only leters")
+                if user_input.lower() == "n":
+                    print(f"You guese it for {10 - TRIES} times")
+                if user_input.lower() == "y":
+                    print(self.history)
 
         print("❌ You ran out of tries! Game over.")
 
@@ -50,4 +64,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
