@@ -2,12 +2,21 @@ import random
 
 
 class Comunication:
+    def __init__(self,
+                 text1="Welcome! This is a game where you need to guess the number.",
+                 text2="Number is between 0 and 100. You have 10 tries. Type 'q' to quit.\n"):
+        self.hi_words = text1
+        self.explanaition = text2
+
     def say_hi(self):
-        print("Welcome! This is a game where you need to guess the number.")
-        print("Number is between 0 and 100. You have 10 tries. Type 'q' to quit.\n")
+        print(self.hi_words)
+        print(self.explanaition)
 
 
 class Computer:
+    def __init__(self):
+        pass
+
     def set_computer_number(self):
         return random.randint(0, 100)
 
