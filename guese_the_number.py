@@ -1,5 +1,13 @@
+# Imports
 import random
 import sys
+import time
+
+# static valuables
+START_POINT = 0
+END_POINT = 100
+
+# Comunicate with user
 
 
 class Comunication:
@@ -18,10 +26,14 @@ class Comunication:
     def say_bye(self) -> str:
         print(self._bye_words)
 
+# Set special computer number
+
 
 class Computer:
-    def set_computer_number(self):
-        return random.randint(0, 100)
+    def set_computer_number(self) -> int:
+        return random.randint(START_POINT, END_POINT)
+
+# Game
 
 
 class Game:
@@ -35,11 +47,9 @@ class Game:
 
             if not _user_answer_str:
                 print("Empty, please try again!")
-                continue
 
             if not _user_answer_str.isdigit():
                 print("Only numbers are allowed! Try again.")
-                continue
 
             _user_answer: int = int(_user_answer_str)
 
@@ -64,25 +74,48 @@ class Game:
                     return print(f"You guese it for {10 - self._TRIES} times")
                 if _user_input.lower() == "y":
                     return print(self._history)
-        self._TRIES = 10
+        self._TRIES: int = 10
         print("❌ You ran out of tries! Game over.")
 
     def guess_number_computer_mod(self, user_number: int):
-        computer_guess = 0
-        start_point = 0
-        end_point = 100
+        # points for guessing
+        _computer_guess: int = 0
+        _start_point: int = 0
+        _end_point: int = 100
         while self._TRIES > 0:
-            computer_guess = random.randint(start_point, end_point)
-            if computer_guess > user_number:
-                print("I did'nt guess it, ir's less.")
-                end_point = computer_guess
-            elif computer_guess < user_number:
-                print("I did'nt guess it, ir's higher.")
-                start_point = computer_guess
+            _computer_guess: int = random.randint(_start_point, _end_point)
+            if _computer_guess > user_number:
+                self._TRIES -= 1
+                self._history.append(_computer_guess)
+                print(
+                    f"My number is: {_computer_guess}. I didn't guess it, it's less.")
+                _end_point = _computer_guess
+                time.sleep(5)
+            elif _computer_guess < user_number:
+                self._TRIES -= 1
+                self._history.append(_computer_guess)
+                print(
+                    f"My number is: {_computer_guess}. I didn't guess it, it's higher.")
+                _start_point = _computer_guess
+                time.sleep(5)
             else:
-                print("🎉 I win")
+                print(f"Your number is {user_number} 🎉 I win")
+                _user_input: str = input(
+                    "Do you want to see a history? y(yes)/n(no)")
+                if not _user_input:
+                    print("Wrong answer!")
+                if _user_input.isdigit():
+                    print("Only leters")
+                if _user_input.lower() == "n":
+                    self._history.clear()
+                    return print(f"You guese it for {10 - self._TRIES} times")
+                if _user_input.lower() == "y":
+                    return print(self._history)
+
         self._TRIES = 10
         print("❌ You ran out of tries! Game over.")
+
+# Computer mode game
 
 
 class ComputerGame:
@@ -94,7 +127,7 @@ class ComputerGame:
         while True:
             while True:
                 try:
-                    self.number: str = int(
+                    self.number: int = int(
                         input("What number do you want to set beetween 0 and 100? "))
                 except TypeError:
                     print("Only numbers")
@@ -106,26 +139,6 @@ class ComputerGame:
                     print("Only this range 0-100")
                 else:
                     break
-            self.game.guess_numbe_computer_mod(self.number)
-            _checker: str = input("Do you want to play again? y or n: ")
-            if _checker == "y":
-                continue
-            elif _checker == "n":
-                print("Okay, have a good day!")
-                break
-            else:
-                print("Wrong type of data!")
-                break
-
-
-class PlayerGame:
-    def __init__(self, computer: Computer, game: Game):
-        self.computer = computer
-        self.game = game
-
-    def player_play(self):
-        while True:
-            self.number: int = self.computer.set_computer_number()
             self.game.guess_number_computer_mod(self.number)
             _checker: str = input("Do you want to play again? y or n: ")
             if _checker == "y":
@@ -137,10 +150,35 @@ class PlayerGame:
                 print("Wrong type of data!")
                 break
 
+# Player mode game
+
+
+class PlayerGame:
+    def __init__(self, computer: Computer, game: Game):
+        self.computer = computer
+        self.game = game
+
+    def player_play(self):
+        while True:
+            self.number: int = self.computer.set_computer_number()
+            self.game.guess_number_user_mod(self.number)
+            _checker: str = input("Do you want to play again? y or n: ")
+            if _checker == "y":
+                continue
+            elif _checker == "n":
+                print("Okay, have a good day!")
+                break
+            else:
+                print("Wrong type of data!")
+                break
+
+# Chosse the operation
+
 
 class Choosing:
     def __init__(self, user_message: Comunication):
         self.user_messager = user_message
+    # chosse mod
 
     def chose_the_mode(self):
         operations: dict = {
@@ -176,6 +214,7 @@ class GuessGame:
         self.player_game = player_game
         self.computer_game = computer_game
 
+    # APP
     def run(self):
         self.user_message.say_hi()
         answer = self.chose.chose_the_mode()
