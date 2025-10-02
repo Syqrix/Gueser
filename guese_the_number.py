@@ -178,8 +178,8 @@ class PlayerGame:
 class Choosing:
     def __init__(self, user_message: Comunication):
         self.user_messager = user_message
-    # chosse mod
 
+    # chosse mod
     def chose_the_mode(self):
         operations: dict = {
             1: "You guess",
