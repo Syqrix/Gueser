@@ -1,16 +1,22 @@
 import random
+import sys
 
 
 class Comunication:
     def __init__(self,
-                 text1="Welcome! This is a game where you need to guess the number.",
-                 text2="Number is between 0 and 100. You have 10 tries. Type 'q' to quit.\n"):
-        self._hi_words: str = text1
-        self._explanaition: str = text2
+                 hi_words="Welcome! This is a game where you need to guess the number.",
+                 explanation_words="Number is between 0 and 100. You have 10 tries. Type 'q' to quit.\n",
+                 bye_words="Thank you for using this app!"):
+        self._hi_words: str = hi_words
+        self._explanaition: str = explanation_words
+        self._bye_words: str = bye_words
 
     def say_hi(self) -> str:
         print(self._hi_words)
         print(self._explanaition)
+
+    def say_bye(self) -> str:
+        print(self._bye_words)
 
 
 class Computer:
@@ -18,12 +24,12 @@ class Computer:
         return random.randint(0, 100)
 
 
-class Guesser:
+class Game:
     def __init__(self):
         self._history: list = []
         self._TRIES: int = 10
 
-    def guess_number(self, computer_number):
+    def guess_number_user_mod(self, computer_number):
         while self._TRIES > 0:
             _user_answer_str: str = input("Your number? ").strip()
 
@@ -61,18 +67,46 @@ class Guesser:
         self._TRIES = 10
         print("❌ You ran out of tries! Game over.")
 
+    def guess_number_computer_mod(self, user_number: int):
+        computer_guess = 0
+        start_point = 0
+        end_point = 100
+        while self._TRIES > 0:
+            computer_guess = random.randint(start_point, end_point)
+            if computer_guess > user_number:
+                print("I did'nt guess it, ir's less.")
+                end_point = computer_guess
+            elif computer_guess < user_number:
+                print("I did'nt guess it, ir's higher.")
+                start_point = computer_guess
+            else:
+                print("🎉 I win")
+        self._TRIES = 10
+        print("❌ You ran out of tries! Game over.")
 
-class GuessGame:
-    def __init__(self, user_message: Comunication, computer: Computer, gueser: Guesser):
-        self.user_message = user_message
+
+class ComputerGame:
+    def __init__(self, computer: Computer, game: Game):
         self.computer = computer
-        self.gueser = gueser
+        self.game = game
 
-    def run(self):
-        self.user_message.say_hi()
+    def computer_play(self):
         while True:
-            self.number: int = self.computer.set_computer_number()
-            self.gueser.guess_number(self.number)
+            while True:
+                try:
+                    self.number: str = int(
+                        input("What number do you want to set beetween 0 and 100? "))
+                except TypeError:
+                    print("Only numbers")
+                if not self.number:
+                    print("Enter something")
+                elif self.number == "q":
+                    return
+                elif self.number < 0 or self.number > 100:
+                    print("Only this range 0-100")
+                else:
+                    break
+            self.game.guess_numbe_computer_mod(self.number)
             _checker: str = input("Do you want to play again? y or n: ")
             if _checker == "y":
                 continue
@@ -84,11 +118,82 @@ class GuessGame:
                 break
 
 
+class PlayerGame:
+    def __init__(self, computer: Computer, game: Game):
+        self.computer = computer
+        self.game = game
+
+    def player_play(self):
+        while True:
+            self.number: int = self.computer.set_computer_number()
+            self.game.guess_number_computer_mod(self.number)
+            _checker: str = input("Do you want to play again? y or n: ")
+            if _checker == "y":
+                continue
+            elif _checker == "n":
+                print("Okay, have a good day!")
+                break
+            else:
+                print("Wrong type of data!")
+                break
+
+
+class Choosing:
+    def __init__(self, user_message: Comunication):
+        self.user_messager = user_message
+
+    def chose_the_mode(self):
+        operations: dict = {
+            1: "You guess",
+            2: "Computer guess"
+        }
+        print("\n Avaibale operations:")
+        for key, value in operations.items():
+            print(f"{key}: {value}")
+        while True:
+            user_answer_str: str = input("Chose the mod for game: ")
+            if not user_answer_str:
+                print("It's empty, try again!")
+            elif user_answer_str == "q":
+                self.user_messager.say_bye()
+                sys.exit()
+            elif user_answer_str.isalpha():
+                print("Only numbers")
+            else:
+                user_answer: int = int(user_answer_str)
+                if user_answer not in operations:
+                    print("There is no such option. Try again")
+                else:
+                    return user_answer
+
+
+class GuessGame:
+    def __init__(self, user_message: Comunication, computer: Computer,
+                 chose: Choosing, player_game: PlayerGame, computer_game: ComputerGame):
+        self.chose = chose
+        self.user_message = user_message
+        self.computer = computer
+        self.player_game = player_game
+        self.computer_game = computer_game
+
+    def run(self):
+        self.user_message.say_hi()
+        answer = self.chose.chose_the_mode()
+        if answer == 1:
+            self.player_game.player_play()
+        else:
+            self.computer_game.computer_play()
+        self.user_message.say_bye()
+
+
 def main():
     user_message = Comunication()
+    chose = Choosing(user_message)
     computer = Computer()
-    gueser = Guesser()
-    app = GuessGame(user_message, computer, gueser)
+    game = Game()
+    computer_game = ComputerGame(computer, game)
+    player_game = PlayerGame(computer, game)
+    app = GuessGame(user_message, computer, chose, player_game, computer_game)
     app.run()
 
 
