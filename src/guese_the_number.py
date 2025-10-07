@@ -119,8 +119,7 @@ class Game:
 
 
 class ComputerGame:
-    def __init__(self, computer: Computer, game: Game):
-        self.computer = computer
+    def __init__(self, game: Game):
         self.game = game
 
     def computer_play(self):
@@ -230,7 +229,7 @@ def main():
     chose = Choosing(user_message)
     computer = Computer()
     game = Game()
-    computer_game = ComputerGame(computer, game)
+    computer_game = ComputerGame(game)
     player_game = PlayerGame(computer, game)
     app = GuessGame(user_message, computer, chose, player_game, computer_game)
     app.run()
