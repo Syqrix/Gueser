@@ -116,3 +116,39 @@ class TestComputerGame:
         assert "App has worked with 15" in output
         assert "Only this range 0-100" in output
         assert "Wrong type of data!" in output
+
+
+class TestGame:
+    @pytest.fixture
+    def number(self):
+        return 79
+
+    def test_guess_number_user_mod(self, number, capsys, monkeypatch):
+        inputs = iter(["", "gfjg", "15", "85", "79", "", "15", "n",
+                       "79", "y"])
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        game = Game()
+        game.guess_number_user_mod(number)
+        output = capsys.readouterr().out
+        assert "Empty, please try again!" in output
+        assert "Only numbers are allowed! Try again." in output
+        assert "Too low! You have 9 tries left." in output
+        assert "Too high! You have 8 tries left." in output
+        assert "🎉 Congratulations, you guessed it!" in output
+        assert "Wrong answer!" in output
+        assert "Only leters" in output
+        assert "You guese it for 2 times" in output
+
+    def test_guess_number_computer_mod(self, number, capsys, monkeypatch):
+        guesses = iter([30, 50, 79])
+        monkeypatch.setattr("random.randint", lambda start, end: next(guesses))
+
+        inputs = iter(["n"])
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        game = Game()
+        game.guess_number_computer_mod(number)
+
+        out = capsys.readouterr().out
+        assert "My number is: 30" in out
+        assert "My number is: 50" in out
+        assert "Your number is 79 🎉 I win" in out
