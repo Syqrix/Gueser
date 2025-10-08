@@ -125,20 +125,21 @@ class ComputerGame:
     def computer_play(self):
         while True:
             while True:
-                try:
-                    self.number: int = int(
-                        input("What number do you want to set beetween 0 and 100? "))
-                except TypeError:
+                number: str = input(
+                    "What number do you want to set beetween 0 and 100? ")
+                if number.isalpha():
                     print("Only numbers")
-                if not self.number:
+                    continue
+                elif not number:
                     print("Enter something")
-                elif self.number == "q":
-                    return
-                elif self.number < 0 or self.number > 100:
+                    continue
+                elif int(number) < 0 or int(number) > 100:
                     print("Only this range 0-100")
+                    continue
                 else:
                     break
-            self.game.guess_number_computer_mod(self.number)
+            number = int(number)
+            self.game.guess_number_computer_mod(number)
             _checker: str = input("Do you want to play again? y or n: ")
             if _checker == "y":
                 continue

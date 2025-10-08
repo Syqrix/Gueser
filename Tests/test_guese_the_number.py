@@ -99,17 +99,20 @@ class TestPlayerGame:
 
 class TestComputerGame:
     class FakeGame:
-        def guess_number_computer_mod(self):
-            print("App has worked!")
+        def guess_number_computer_mod(self, number):
+            number = 15
+            print(f"App has worked with {number}")
 
     def test_computer_game(self, capsys, monkeypatch):
-        inputs = iter([15, "", "fsg", 150, -5])
+        inputs = iter(["fgh", "", "15", "y", "150", "15", "fdetw", "15", "n"])
         monkeypatch.setattr("builtins.input", lambda _: next(inputs))
         game = self.FakeGame()
         computer = ComputerGame(game)
         computer.computer_play()
-        output = capsys.readoutter().out
+        output = capsys.readouterr().out
+
         assert "Only numbers" in output
-        assert "App has worked!" in output
         assert "Enter something" in output
+        assert "App has worked with 15" in output
         assert "Only this range 0-100" in output
+        assert "Wrong type of data!" in output
