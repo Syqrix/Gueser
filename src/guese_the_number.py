@@ -41,16 +41,16 @@ class Game:
         self._history: list = []
         self._TRIES: int = 10
 
-    def guess_number_user_mod(self, computer_number):
+    def guess_number_user_mod(self, computer_number: int):
         while self._TRIES > 0:
             _user_answer_str: str = input("Your number? ").strip()
 
             if not _user_answer_str:
                 print("Empty, please try again!")
-
-            if not _user_answer_str.isdigit():
+                continue
+            elif not _user_answer_str.isdigit():
                 print("Only numbers are allowed! Try again.")
-
+                continue
             _user_answer: int = int(_user_answer_str)
 
             if _user_answer > computer_number:
@@ -63,17 +63,20 @@ class Game:
                 print(f"Too low! You have {self._TRIES} tries left.")
             else:
                 print("🎉 Congratulations, you guessed it!")
-                _user_input: str = input(
-                    "Do you want to see a history? y(yes)/n(no)")
-                if not _user_input:
-                    print("Wrong answer!")
-                if _user_input.isdigit():
-                    print("Only leters")
-                if _user_input.lower() == "n":
-                    self._history.clear()
-                    return print(f"You guese it for {10 - self._TRIES} times")
-                if _user_input.lower() == "y":
-                    return print(self._history)
+                while True:
+                    _user_input: str = input(
+                        "Do you want to see a history? y(yes)/n(no)")
+                    if not _user_input:
+                        print("Wrong answer!")
+                        continue
+                    if _user_input.isdigit():
+                        print("Only leters")
+                        continue
+                    if _user_input.lower() == "n":
+                        self._history.clear()
+                        return print(f"You guese it for {10 - self._TRIES} times")
+                    if _user_input.lower() == "y":
+                        return print(self._history)
         self._TRIES: int = 10
         print("❌ You ran out of tries! Game over.")
 
@@ -111,7 +114,6 @@ class Game:
                     return print(f"You guese it for {10 - self._TRIES} times")
                 if _user_input.lower() == "y":
                     return print(self._history)
-
         self._TRIES = 10
         print("❌ You ran out of tries! Game over.")
 
@@ -119,27 +121,27 @@ class Game:
 
 
 class ComputerGame:
-    def __init__(self, computer: Computer, game: Game):
-        self.computer = computer
+    def __init__(self, game: Game):
         self.game = game
 
     def computer_play(self):
         while True:
             while True:
-                try:
-                    self.number: int = int(
-                        input("What number do you want to set beetween 0 and 100? "))
-                except TypeError:
+                number: str = input(
+                    "What number do you want to set beetween 0 and 100? ")
+                if number.isalpha():
                     print("Only numbers")
-                if not self.number:
+                    continue
+                elif not number:
                     print("Enter something")
-                elif self.number == "q":
-                    return
-                elif self.number < 0 or self.number > 100:
+                    continue
+                elif int(number) < 0 or int(number) > 100:
                     print("Only this range 0-100")
+                    continue
                 else:
                     break
-            self.game.guess_number_computer_mod(self.number)
+            number: int = int(number)
+            self.game.guess_number_computer_mod(number)
             _checker: str = input("Do you want to play again? y or n: ")
             if _checker == "y":
                 continue
@@ -179,8 +181,8 @@ class Choosing:
     def __init__(self, user_message: Comunication):
         self.user_messager = user_message
 
-    # chosse mod
-    def chose_the_mode(self):
+    # chose mod
+    def chose_the_mode(self) -> int:
         operations: dict = {
             1: "You guess",
             2: "Computer guess"
@@ -189,20 +191,22 @@ class Choosing:
         for key, value in operations.items():
             print(f"{key}: {value}")
         while True:
-            user_answer_str: str = input("Chose the mod for game: ")
-            if not user_answer_str:
+            _user_answer_str: str = input("Chose the mod for game: ")
+            if not _user_answer_str:
                 print("It's empty, try again!")
-            elif user_answer_str == "q":
+            elif _user_answer_str == "q":
                 self.user_messager.say_bye()
                 sys.exit()
-            elif user_answer_str.isalpha():
+            elif _user_answer_str.isalpha():
                 print("Only numbers")
             else:
-                user_answer: int = int(user_answer_str)
+                user_answer: int = int(_user_answer_str)
                 if user_answer not in operations:
                     print("There is no such option. Try again")
                 else:
                     return user_answer
+
+# App
 
 
 class GuessGame:
@@ -217,12 +221,14 @@ class GuessGame:
     # APP
     def run(self):
         self.user_message.say_hi()
-        answer = self.chose.chose_the_mode()
+        answer: int = self.chose.chose_the_mode()
         if answer == 1:
             self.player_game.player_play()
         else:
             self.computer_game.computer_play()
         self.user_message.say_bye()
+
+# Initialization
 
 
 def main():
@@ -230,11 +236,12 @@ def main():
     chose = Choosing(user_message)
     computer = Computer()
     game = Game()
-    computer_game = ComputerGame(computer, game)
+    computer_game = ComputerGame(game)
     player_game = PlayerGame(computer, game)
     app = GuessGame(user_message, computer, chose, player_game, computer_game)
     app.run()
 
 
+# Start
 if __name__ == "__main__":
     main()
